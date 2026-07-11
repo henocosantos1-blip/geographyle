@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <title>Geographyle</title>
+    <!-- Tailwind CSS (carregado via CDN para estruturação rápida) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Proposta Dark Cyber-Map (Estilo Sala de Situação) */
+        body {
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Sobrescritas para o visual Dark Cyber-Map */
+        .bg-slate-900 {
+            background-color: #111625 !important;
+            border-color: rgba(255, 255, 255, 0.07) !important;
+        }
+
+        .bg-slate-950 {
+            background-color: #070a12 !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .border-slate-800 {
+            border-color: rgba(255, 255, 255, 0.07) !important;
+        }
+
+        .bg-slate-800\/40 {
+            background-color: rgba(17, 22, 37, 0.6) !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .bg-slate-800 {
+            background-color: #1a2035 !important;
+            border-color: rgba(255, 255, 255, 0.07) !important;
+        }
+
+        /* Destaques e Paleta de Cores Focadas */
+        .text-emerald-400 {
+            color: #06b6d4 !important;
+            /* Azul Ciano Neon */
+        }
+
+        .text-amber-400 {
+            color: #a78bfa !important;
+            /* Roxo Cósmico */
+        }
+
+        /* Botões Estilo Cápsula Neon */
+        .bg-emerald-600 {
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%) !important;
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .bg-emerald-600:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%) !important;
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35) !important;
+        }
+
+        .focus\:border-emerald-500:focus {
+            border-color: #06b6d4 !important;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2) !important;
+        }
+
+        /* Badges e Dicas */
+        .bg-emerald-950\/40 {
+            background-color: rgba(6, 182, 212, 0.1) !important;
+            color: #06b6d4 !important;
+            border-color: rgba(6, 182, 212, 0.3) !important;
+        }
+
+        .bg-slate-800\/50 {
+            background-color: rgba(26, 32, 53, 0.5) !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between p-4">
+
+    <!-- Cabeçalho-->
+    <header class="text-center py-6 border-b border-indigo-950/30 bg-gradient-to-b from-[#161233] to-[#0b0f19] flex flex-col items-center justify-center gap-3 rounded-2xl mb-4">
+        <div class="flex items-center justify-center gap-4">
+            <img src="icon.png" alt="Geographyle Logo" class="w-12 h-12 rounded-full border-2 border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.25)]">
+            <h1 class="text-3xl font-extrabold tracking-widest text-[#06b6d4] uppercase">GEOGRAPHYLE</h1>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center py-6">
+        <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col justify-between min-h-[500px]">
+
+            <!-- TELA 1: MENU DE CONFIGURAÇÃO -->
+            <div id="screen-setup" class="space-y-6 my-auto">
+                <div class="text-center">
+                    <h2 class="text-xl font-bold">Configuração da Partida</h2>
+                    <p class="text-sm text-slate-400 mt-1">Selecione o número de jogadores (até 4) e digite os nomes.</p>
+                </div>
+
+                <div class="flex flex-col items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <label class="font-medium">Jogadores:</label>
+                        <select id="player-count" class="bg-slate-800 border border-slate-700 rounded px-3 py-1 text-white focus:outline-none" onchange="setupPlayerInputs()">
+                            <option value="1">1 Jogador</option>
+                            <option value="2" selected>2 Jogadores</option>
+                            <option value="3">3 Jogadores</option>
+                            <option value="4">4 Jogadores</option>
+                        </select>
+                    </div>
+
+                    <div id="player-names-container" class="w-full max-w-md space-y-3 mt-2">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+
+                    <button onclick="startGame()" class="mt-4 w-full max-w-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-lg">
+                        Começar Partida (5 Rodadas)
+                    </button>
+                </div>
+            </div>
+
+            <!-- TELA 2: TRANSIÇÃO DE TURNO -->
+            <div id="screen-ready" class="hidden text-center space-y-6 py-10 my-auto">
+                <div class="space-y-2">
+                    <span class="text-xs uppercase tracking-widest bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-semibold">
+                        Rodada <span id="ready-round-num">1</span> de 5
+                    </span>
+                    <h2 class="text-3xl font-extrabold mt-4">Vez de: <span id="ready-player-name" class="text-emerald-400">Jogador</span></h2>
+                    <p class="text-slate-400 max-w-md mx-auto">Chame o jogador e clique em começar. Seus adversários não devem olhar a tela durante suas tentativas.</p>
+                </div>
+
+                <div class="flex flex-col items-center gap-3">
+                    <button onclick="startPlayerTurn()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-10 rounded-lg transition-colors text-lg shadow-lg">
+                        Iniciar Turno
+                    </button>
+                    <button onclick="goToMainMenu()" class="text-xs text-slate-500 hover:text-slate-400 underline transition mt-2">
+                        Voltar para a Tela Inicial
+                    </button>
+                </div>
+            </div>
+
+            <!-- TELA 3: GAMEPLAY -->
+            <div id="screen-gameplay" class="hidden space-y-6">
+                <!-- Status do Turno -->
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase font-semibold">Jogador</p>
+                        <h3 id="gameplay-player-name" class="text-xl font-bold text-emerald-400">Jogador</h3>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="text-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-800">
+                            <p class="text-xs text-slate-400 uppercase font-semibold">Rodada</p>
+                            <p class="text-lg font-bold"><span id="gameplay-round-num">1</span> / 5</p>
+                        </div>
+                        <div class="text-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-800">
+                            <p class="text-xs text-slate-400 uppercase font-semibold">Tentativas</p>
+                            <p class="text-lg font-bold text-yellow-400"><span id="gameplay-attempts">0</span> / 10</p>
+                        </div>
+                        <div class="text-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-800 min-w-[80px]">
+                            <p class="text-xs text-slate-400 uppercase font-semibold">Tempo</p>
+                            <p id="gameplay-timer" class="text-lg font-bold text-red-400">0s</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dicas -->
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <p class="text-sm font-semibold text-slate-300">Dicas Disponíveis (A ativação reduz a pontuação máxima do acerto):</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button id="btn-hint-1" onclick="useHint(1)" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 px-3 rounded border border-slate-700 transition">
+                            Dica 1: Direção Ref. (Max 4 pts)
+                        </button>
+                        <button id="btn-hint-2" onclick="useHint(2)" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 px-3 rounded border border-slate-700 transition" disabled>
+                            Dica 2: Continente (Max 3 pts)
+                        </button>
+                        <button id="btn-hint-3" onclick="useHint(3)" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 px-3 rounded border border-slate-700 transition" disabled>
+                            Dica 3: Bandeira (Max 1 pt)
+                        </button>
+                    </div>
+                    <div id="hint-display" class="hidden bg-slate-900/80 p-3 rounded text-sm text-emerald-300 border border-emerald-950 space-y-1"></div>
+                </div>
+
+                <!-- Input e botões de ação -->
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-300">Escolha ou digite o país:</label>
+
+                        <!-- Formulário configurado para interceptar o Enter e chamar o palpite sem recarregar a página -->
+                        <form onsubmit="event.preventDefault(); submitGuess();" class="flex gap-2">
+                            <input list="countries-list" id="guess-input" class="flex-grow bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500" placeholder="Digite um país...">
+                            <datalist id="countries-list">
+                                <!-- Injetado dinamicamente -->
+                            </datalist>
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-lg transition-colors">
+                                Advinhar
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <!-- Botão de Desistência e Retorno -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="forfeitRound()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/50 text-xs font-semibold px-4 py-2 rounded transition">
+                            🏳️ Desistir da Rodada (Revelar País)
+                        </button>
+                        <button onclick="goToMainMenu()" class="text-xs text-slate-500 hover:text-slate-400 underline transition">
+                            Voltar para a Tela Inicial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Histórico de Palpites -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="text-slate-400 border-b border-slate-800">
+                                <th class="py-2">País</th>
+                                <th class="py-2">Continente</th>
+                                <th class="py-2">População</th>
+                                <th class="py-2">Área</th>
+                                <th class="py-2">Temp. Média</th>
+                                <th class="py-2">Distância</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attempts-table-body" class="divide-y divide-slate-800/50">
+                            <!-- Palpites anteriores -->
+                        </tbody>
+                    </table>
+                </div>
+                </div> <!-- <<< ESTA TAG ESTAVA FALTANDO AQUI PARA FECHAR A TELA 3 (screen-gameplay) >>> -->
+                
+                <!-- TELA 4: RESULTADO DO TURNO -->
+                <div id="screen-result" class="hidden text-center space-y-6 py-8 my-auto">
+                <h2 id="result-title" class="text-3xl font-extrabold">Resultado</h2>
+                <div id="result-details" class="bg-slate-800/30 p-6 rounded-xl border border-slate-800 max-w-md mx-auto space-y-3">
+                    <!-- Detalhes do turno -->
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <button onclick="nextTurn()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-10 rounded-lg transition-colors">
+                        Avançar
+                    </button>
+                    <button onclick="goToMainMenu()" class="text-xs text-slate-500 hover:text-slate-400 underline transition mt-2">
+                        Voltar para a Tela Inicial
+                    </button>
+                </div>
+            </div>
+
+            <!-- TELA 5: RANKING FINAL -->
+            <div id="screen-ranking" class="hidden space-y-6 py-6 my-auto">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl font-extrabold text-amber-400">🏆 Classificação Final</h2>
+                    <p class="text-slate-400">Pontuação final obtida após as 5 rodadas de competição.</p>
+                </div>
+
+                <div class="max-w-md mx-auto overflow-hidden rounded-xl border border-slate-800 shadow-xl">
+                    <table class="w-full text-left text-sm bg-slate-950">
+                        <thead class="bg-slate-900 text-slate-300">
+                            <tr>
+                                <th class="p-4">Posição</th>
+                                <th class="p-4">Jogador</th>
+                                <th class="p-4 text-right">Pontos Totais</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-table-body" class="divide-y divide-slate-800">
+                            <!-- Classificação -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center pt-4 flex flex-col items-center gap-3">
+                    <button onclick="resetGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                        Reiniciar Jogo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800">
+        Henoc Oliveira Santos - 2026&copy;
+    </footer>
+
+    <!-- Importa o Banco de Dados local -->
+    <script src="db.js"></script>
+
+    <!-- Sistema do Jogo -->
+    <script src="game.js"> </script>
+</body>
+
+</html>
