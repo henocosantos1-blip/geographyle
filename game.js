@@ -267,7 +267,7 @@ let players = [];
 
             if (correct) {
                 endTurn(true);
-            } else if (attemptsCount >= 10) {
+            } else if (attemptsCount >= 20) {
                 endTurn(false);
             }
         }
